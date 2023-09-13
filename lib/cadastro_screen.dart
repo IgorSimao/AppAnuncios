@@ -2,12 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:mercado_livre/home_page.dart';
 import 'package:mercado_livre/model/produto.dart';
 
-class CadastroScreen extends StatelessWidget {
+class CadastroScreen extends StatefulWidget {
+  Produto? produto;
+  CadastroScreen({this.produto});
+
+  @override
+  _CadastroScreenState createState() => _CadastroScreenState();
+}
+
+class _CadastroScreenState extends State<CadastroScreen> {
   final TextEditingController _produtoNomeController = TextEditingController();
   final TextEditingController _produtoDescController = TextEditingController();
   final TextEditingController _produtoValorController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.produto != null) {
+      setState(() {
+        _produtoNomeController.text = widget.produto!.nome;
+        _produtoDescController.text = widget.produto!.descricao;
+        _produtoValorController.text = widget.produto!.valor.toString();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +40,7 @@ class CadastroScreen extends StatelessWidget {
             ),
           ),
           centerTitle: true,
-          backgroundColor: Color.fromARGB(255, 242, 223, 53),
+          backgroundColor: const Color.fromARGB(255, 242, 223, 53),
         ),
         body: SingleChildScrollView(
           child: Form(
@@ -27,7 +48,7 @@ class CadastroScreen extends StatelessWidget {
             child: Column(
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: TextFormField(
                     controller: _produtoNomeController,
                     style: const TextStyle(fontSize: 18),
@@ -45,7 +66,7 @@ class CadastroScreen extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: TextFormField(
                     controller: _produtoDescController,
                     style: const TextStyle(fontSize: 18),
@@ -63,10 +84,11 @@ class CadastroScreen extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   child: TextFormField(
                     controller: _produtoValorController,
                     style: const TextStyle(fontSize: 18),
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       labelText: "Valor do Produto",
                       border: OutlineInputBorder(
@@ -84,7 +106,7 @@ class CadastroScreen extends StatelessWidget {
                   Expanded(
                     child: Container(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                       height: 100,
                       width: 200,
                       child: ElevatedButton(
@@ -108,7 +130,7 @@ class CadastroScreen extends StatelessWidget {
                   Expanded(
                     child: Container(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                       height: 100,
                       width: 200,
                       child: ElevatedButton(
@@ -121,7 +143,7 @@ class CadastroScreen extends StatelessWidget {
                                   builder: (context) => HomePage()))
                         },
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 242, 223, 53)),
+                            backgroundColor: const Color.fromARGB(255, 242, 223, 53)),
                       ),
                     ),
                   )

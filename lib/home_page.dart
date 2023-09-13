@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
           "Mercado Livre",
           style: TextStyle(color: Colors.black),
         ),
-        backgroundColor: Color.fromARGB(255, 242, 223, 53),
+        backgroundColor: const Color.fromARGB(255, 242, 223, 53),
       ),
       body: ListView.separated(
           itemCount: _list.length,
@@ -32,29 +32,73 @@ class _HomePageState extends State<HomePage> {
               background: Container(
                 color: Colors.red,
                 child: const Align(
-                  alignment: Alignment(-0.9, 0.0),
+                  alignment: Alignment(0.9, 0.0),
                   child: Icon(
                     Icons.delete,
                     color: Colors.white,
                   ),
                 ),
               ),
+              direction: DismissDirection.endToStart,
+              onDismissed: (direction) {
+                setState(() {
+                  _list.removeAt(position);
+                });
+              },
               child: ListTile(
-                title: Text(_list[position].nome),
-                subtitle: Text(_list[position].descricao),
-                trailing: Text("R\$${_list[position].valor.toString()}"),
-              ),
+                  title: Text(_list[position].nome),
+                  subtitle: Text(_list[position].descricao +
+                      "\n" +
+                      "R\$${_list[position].valor.toString()}"),
+                  // trailing: Icon(Icons.edit_outlined),
+                  trailing: Container(
+                    child: ElevatedButton.icon(
+                        onPressed: () async {
+                          Produto editeProduto = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CadastroScreen(
+                                        produto: produto,
+                                      )));
+                          if (editeProduto != null) {
+                            setState(() {
+                              _list.removeAt(position);
+                              _list.insert(position, editeProduto);
+                            });
+                          }
+                        },
+                        icon: const Icon(Icons.edit_outlined),
+                        label: const Text("Editar")),
+                  ),
+                  onLongPress: () async {
+                    Produto editeProduto = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                CadastroScreen(produto: produto)));
+
+                    if (editeProduto != null) {
+                      setState(() {
+                        _list.removeAt(position);
+                        _list.insert(position, editeProduto);
+                      });
+                    }
+                  }),
             );
           }),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromARGB(255, 242, 223, 53),
+        backgroundColor: const Color.fromARGB(255, 242, 223, 53),
         child: const Icon(Icons.add),
         onPressed: () async {
-          Produto produto = await Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CadastroScreen()));
-          setState(() {
-            _list.add(produto);
-          });
+          try {
+            Produto produto = await Navigator.push(context,
+                MaterialPageRoute(builder: (context) => CadastroScreen()));
+            setState(() {
+              _list.add(produto);
+            });
+          } catch (error) {
+            print("Error: ${error.toString()}");
+          }
         },
       ),
     );
