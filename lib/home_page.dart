@@ -1,4 +1,7 @@
 import 'dart:ffi';
+import 'package:mercado_livre/database/iproduto.dart';
+import 'package:mercado_livre/database/produtos_helper.dart';
+
 import 'cadastro_screen.dart';
 
 import 'package:flutter/material.dart';
@@ -12,6 +15,20 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Produto> _list = List.empty(growable: true);
+
+  ProdutosHelper helper = ProdutosHelper();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    helper.getAll().then((data) {
+      setState(() {
+        if (data != null) _list = data;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,13 +57,28 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               direction: DismissDirection.endToStart,
-              onDismissed: (direction) {
-                setState(() {
-                  _list.removeAt(position);
-                });
+              onDismissed: (direction) async {
+                var result = await helper.delete(produto);
+                if (result != null) {
+                  setState(() {
+                    _list.removeAt(position);
+                    const snackbar = SnackBar(
+                      content: Text("Produto Removido com sucesso!"),
+                      backgroundColor: Colors.red,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                  });
+                }
               },
               child: ListTile(
                   title: Text(_list[position].nome),
+                  leading: Container(
+                    width: 50,
+                    height: 50,
+                    child: produto.image != null
+                        ? ClipOval(child: Image.file(produto.image!))
+                        : Container(),
+                  ),
                   subtitle: Text(_list[position].descricao +
                       "\n" +
                       "R\$${_list[position].valor.toString()}"),
@@ -60,10 +92,18 @@ class _HomePageState extends State<HomePage> {
                                   builder: (context) => CadastroScreen(
                                         produto: produto,
                                       )));
-                          if (editeProduto != null) {
+                          var result = await helper.edit(editeProduto);
+
+                          if (result != null) {
                             setState(() {
                               _list.removeAt(position);
                               _list.insert(position, editeProduto);
+                              const snackbar = SnackBar(
+                                content: Text("Produto Editado com sucesso!"),
+                                backgroundColor: Colors.orange,
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackbar);
                             });
                           }
                         },
@@ -93,9 +133,17 @@ class _HomePageState extends State<HomePage> {
           try {
             Produto produto = await Navigator.push(context,
                 MaterialPageRoute(builder: (context) => CadastroScreen()));
-            setState(() {
-              _list.add(produto);
-            });
+            Produto? savedProduto = await helper.save(produto);
+            if (savedProduto != null) {
+              setState(() {
+                _list.add(produto);
+                const snackbar = SnackBar(
+                  content: Text("Produto Criado com sucesso!"),
+                  backgroundColor: Colors.green,
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackbar);
+              });
+            }
           } catch (error) {
             print("Error: ${error.toString()}");
           }
