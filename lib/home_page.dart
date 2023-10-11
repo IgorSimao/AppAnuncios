@@ -18,6 +18,10 @@ class _HomePageState extends State<HomePage> {
 
   ProdutosHelper helper = ProdutosHelper();
 
+  int currentPageIndex = 0;
+  NavigationDestinationLabelBehavior labelBehavior =
+      NavigationDestinationLabelBehavior.alwaysShow;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -126,6 +130,29 @@ class _HomePageState extends State<HomePage> {
                   }),
             );
           }),
+      bottomNavigationBar: NavigationBar(
+        labelBehavior: labelBehavior,
+        selectedIndex: currentPageIndex,
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        destinations: const <Widget>[
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            label: 'Início',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.favorite_border_outlined),
+            label: 'Favoritos',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.shopping_bag_outlined),
+            label: 'Minhas compras',
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 242, 223, 53),
         child: const Icon(Icons.add),
